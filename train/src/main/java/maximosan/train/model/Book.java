@@ -1,4 +1,4 @@
-package maximosan.train;
+package maximosan.train.model;
 
 import lombok.Data;
 
