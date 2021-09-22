@@ -6,8 +6,8 @@ import javax.persistence.Id;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 
-@Entity
 @Data
+@Entity(name="Books")
 @AllArgsConstructor
 public class Book {
     @Id
@@ -36,6 +36,4 @@ public class Book {
 
     @Column(name = "pages", nullable = false)
     private Integer pages;
-
-
 }
