@@ -6,13 +6,13 @@ import maximosan.train.exceptions.BookNotOwnedException;
 import maximosan.train.exceptions.UserNotFoundException;
 import maximosan.train.exceptions.UserUsernameMismatchException;
 import maximosan.train.models.Book;
-import maximosan.train.models.Users;
+import maximosan.train.models.User;
 import maximosan.train.repositories.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 @Service
-public class UsersImplementation {
+public class UserImplementation {
 
     @Autowired
     private UserRepository userRepository;
@@ -23,18 +23,18 @@ public class UsersImplementation {
     public Iterable findAll() {
         return userRepository.findAll();
     }
-    public Users findByName(String name) {
-        Users res = userRepository.findByName(name);
+    public User findByName(String name) {
+        User res = userRepository.findByName(name);
         if (res == null)
             throw new UserNotFoundException("user with that name not found.");
         return res;
     }
 
-    public Users createUser(Users user) {
+    public User createUser(User user) {
         return userRepository.save(user);
     }
 
-    public Users updateUser(Users user, String username) {
+    public User updateUser(User user, String username) {
         if (user.getUsername() != username) {
             throw new UserUsernameMismatchException("username doesn't match");
         }
@@ -48,15 +48,15 @@ public class UsersImplementation {
         userRepository.deleteByUsername(username);
     }
 
-    public Users findOne(String username) {
-        Users res = userRepository.findByUsername(username);
+    public User findOne(String username) {
+        User res = userRepository.findByUsername(username);
         if (res == null)
             throw new UserNotFoundException("user with that username not found.");
         return res;
     }
 
-    public Users addBook(String username, String isbn) {
-        Users user = findOne(username);
+    public User addBook(String username, String isbn) {
+        User user = findOne(username);
         Book book = bookImplementation.findByIsbn(isbn);
 
         List<String> userBooks = userRepository.getUserBooks(username);
@@ -70,8 +70,8 @@ public class UsersImplementation {
         return user;
     }
 
-    public Users removeBook(String username, String isbn) {
-        Users user = findOne(username);
+    public User removeBook(String username, String isbn) {
+        User user = findOne(username);
         Book book = bookImplementation.findByIsbn(isbn);
 
         List<String> userBooks = userRepository.getUserBooks(username);
