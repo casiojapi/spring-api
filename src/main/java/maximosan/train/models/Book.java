@@ -36,4 +36,7 @@ public class Book {
 
     @Column(name = "pages", nullable = false)
     private Integer pages;
+
+    @Column(name = "user_id", nullable = true)
+    private String user_id;
 }
