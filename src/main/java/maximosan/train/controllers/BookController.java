@@ -1,5 +1,6 @@
 package maximosan.train.controllers;
 
+import io.swagger.annotations.Api;
 import java.util.List;
 import maximosan.train.exceptions.BookIsbnMismatchException;
 import maximosan.train.exceptions.BookNotFoundException;
@@ -20,6 +21,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 @RestController
 @RequestMapping(value="/api/books")
+@Api
 public class BookController {
 
     @Autowired
