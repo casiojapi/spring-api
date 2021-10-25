@@ -24,10 +24,16 @@ public class BookImplementation {
     public Iterable findAll() {
         return bookRepository.findAll();
     }
+
     public Book findByIsbn(String isbn) {
         Book res = bookRepository.findByIsbn(isbn);
-        if (res == null)
+        if (res == null) {
+            // buscar en API -> openLibraryService
+            // llamo al openlibrary
+            // armo una clase que haga bookDto a book (en un paquete de utils)
+            //
             throw new BookNotFoundException("book with that isbn not found.");
+        }
         return res;
     }
 
