@@ -1,7 +1,9 @@
 package maximosan.train.dtos;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
+import lombok.Data;
 
+@Data
 public class AuthorDTO {
     @JsonProperty(value="url")
     private String url;
