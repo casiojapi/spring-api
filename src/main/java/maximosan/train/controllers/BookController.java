@@ -2,13 +2,12 @@ package maximosan.train.controllers;
 
 import io.swagger.annotations.Api;
 import java.util.List;
-import maximosan.train.exceptions.BookIsbnMismatchException;
-import maximosan.train.exceptions.BookNotFoundException;
+import maximosan.train.dtos.BookHttpStatusDTO;
 import maximosan.train.implementation.BookImplementation;
 import maximosan.train.models.Book;
-import maximosan.train.repositories.BookRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -40,6 +39,19 @@ public class BookController {
     @GetMapping("/{isbn}")
     public Book findOne(@PathVariable String isbn) {
         return bookImplementation.findByIsbn(isbn);
+    }
+
+    @GetMapping("/external/{bookIsbn}")
+    public ResponseEntity<Book> getBookByIsbn(@PathVariable String bookIsbn){
+        BookHttpStatusDTO bookStatusResponse =  bookImplementation.findByIsbnStatusCode(bookIsbn);
+        switch (bookStatusResponse.getHttpStatus()){
+            case "200":
+                return new ResponseEntity<>(bookStatusResponse.getBook(), HttpStatus.OK);
+            case "201":
+                return new ResponseEntity<>(bookStatusResponse.getBook(), HttpStatus.CREATED);
+            default:
+                return new ResponseEntity<>(null, HttpStatus.NOT_FOUND);
+        }
     }
 
     @PostMapping

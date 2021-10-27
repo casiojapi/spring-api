@@ -6,8 +6,10 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import java.util.HashMap;
 import java.util.Map;
 import maximosan.train.dtos.BookDTO;
+import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
 
+@Service
 public class OpenLibraryService {
 
     private static String isbnUrl = "https://openlibrary.org/api/books?bibkeys=ISBN:";
@@ -15,7 +17,7 @@ public class OpenLibraryService {
 
     RestTemplate restTemplate = new RestTemplate();
 
-    public BookDTO bookInfo(String isbn) throws Exception {
+    public BookDTO bookInfo(String isbn) {
         String getUrl = isbnUrl.concat(isbn).concat(isbnUrlFormat);
         Map<String, HashMap<String, Object>> response = restTemplate.getForObject(getUrl, Map.class); // armo un hash
 

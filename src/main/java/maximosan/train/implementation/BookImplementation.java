@@ -1,11 +1,15 @@
 package maximosan.train.implementation;
 
 import java.util.List;
+import maximosan.train.dtos.BookDTO;
+import maximosan.train.dtos.BookHttpStatusDTO;
 import maximosan.train.exceptions.BookAlreadyOwnedException;
 import maximosan.train.exceptions.BookIsbnMismatchException;
 import maximosan.train.exceptions.BookNotFoundException;
 import maximosan.train.models.Book;
 import maximosan.train.repositories.BookRepository;
+import maximosan.train.services.OpenLibraryService;
+import maximosan.train.utils.BookDTOToBook;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -14,6 +18,12 @@ public class BookImplementation {
 
     @Autowired
     private BookRepository bookRepository;
+
+    @Autowired
+    private OpenLibraryService openLib;
+
+    @Autowired
+    private BookDTOToBook bookDTOToBook;
 
     public Book findByName(String name) {
         Book res = bookRepository.findByName(name);
@@ -28,13 +38,35 @@ public class BookImplementation {
     public Book findByIsbn(String isbn) {
         Book res = bookRepository.findByIsbn(isbn);
         if (res == null) {
-            // buscar en API -> openLibraryService
-            // llamo al openlibrary
-            // armo una clase que haga bookDto a book (en un paquete de utils)
-            //
-            throw new BookNotFoundException("book with that isbn not found.");
+            BookDTO bookDTO = openLib.bookInfo(isbn);
+            if (bookDTO == null)
+                return null;        // aca, si el libro no esta, deberia saltar la excepcion en book info. Por ende, hace falta validar esto?
+                                    // en caso de que haya que validar, devuelvo null o una excepcion?
+            res = bookDTOToBook.bookDTOToBook(bookDTO);
+            bookRepository.save(res);
         }
         return res;
+    }
+
+    public Book findByIsbnOpenLib(String isbn) {
+        BookDTO bookDTO = openLib.bookInfo(isbn);
+        if (bookDTO == null)
+            return null;        // aca, si el libro no esta, deberia saltar la excepcion en book info. Por ende, hace falta validar esto?
+                                // en caso de que haya que validar, devuelvo null o una excepcion?
+        Book res = bookDTOToBook.bookDTOToBook(bookDTO);
+        return bookRepository.save(res);
+    }
+
+    public BookHttpStatusDTO findByIsbnStatusCode(String isbn) {
+        Book foundBook = findByIsbn(isbn);
+        if (foundBook == null) {
+            foundBook = findByIsbnOpenLib(isbn);
+            if (foundBook == null) {
+                return new BookHttpStatusDTO(null, "404");
+            }
+            return new BookHttpStatusDTO(foundBook, "201");
+        }
+        return new BookHttpStatusDTO(foundBook, "200");
     }
 
     public void deleteByIsbn(String isbn) {
